@@ -1,0 +1,29 @@
+extends layouts/base
+
+block content
+  section(class="py-12 bg-white")
+    div(class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")
+      div(class="lg:text-center")
+        h2(class="text-base text-indigo-600 font-semibold tracking-wide uppercase") Welcome to
+        p(class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl") ReStyle Fashion Store
+        p(class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto") Discover the latest trends in sustainable fashion
+
+  section(class="py-12 bg-gray-50")
+    div(class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")
+      h2(class="text-2xl font-bold text-gray-900 mb-8") Featured Products
+      div(class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4")
+        each product in featuredProducts || []
+          div(class="group relative")
+            div(class="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none")
+              img(src=product.imageUrl alt=product.name class="w-full h-full object-center object-cover lg:w-full lg:h-full")
+            div(class="mt-4 flex justify-between")
+              div
+                h3(class="text-sm text-gray-700")
+                  a(href=`/products/${product.id}`)
+                    span(aria-hidden="true" class="absolute inset-0")
+                    | #{product.name}
+                p(class="mt-1 text-sm text-gray-500") #{product.category}
+              p(class="text-sm font-medium text-gray-900") $#{product.price}
+
+      div(class="mt-10 text-center")
+        a(href="/products" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") View All Products
