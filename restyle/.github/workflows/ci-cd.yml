@@ -1,0 +1,47 @@
+name: Node.js CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm test
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Docker image
+      run: docker build -t restyle-fashion-store .
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    - name: Push to Docker Hub
+      run: |
+        docker tag restyle-fashion-store ${{ secrets.DOCKER_HUB_USERNAME }}/restyle-fashion-store:latest
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/restyle-fashion-store:latest
+    - name: Deploy to production
+      run: |
+        ssh ${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/restyle-fashion-store:latest"
+        ssh ${{ secrets.SSH_HOST }} "docker-compose -f /path/to/production/docker-compose.yml up -d"
