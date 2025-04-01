@@ -1,0 +1,59 @@
+extends ../layouts/base
+
+block content
+  div(class="bg-white")
+    div(class="max-w-2xl mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8")
+      h1(class="text-2xl font-bold tracking-tight text-gray-900")= category ? `${category} Collection` : 'All Products'
+
+      // Filters
+      div(class="mt-6 border-t border-gray-200 pt-6")
+        div(class="flex items-center justify-between")
+          div(class="flex space-x-4")
+            div(class="relative")
+              button(type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900" id="menu-button" aria-expanded="false" aria-haspopup="true")
+                | Sort
+                svg(class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true")
+                  path(fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd")
+
+            div(class="relative")
+              button(type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900" id="filter-button" aria-expanded="false" aria-haspopup="true")
+                | Filters
+                svg(class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true")
+                  path(fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd")
+
+          div(class="text-sm")
+            p(class="text-gray-500") Showing 
+              span(class="font-medium")= `${(page - 1) * limit + 1}-${Math.min(page * limit, total)}` 
+              | of 
+              span(class="font-medium")= total 
+              | products
+
+      // Product grid
+      div(class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8")
+        each product in products
+          div(class="group relative")
+            div(class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80")
+              img(src=product.image_url alt=product.name class="h-full w-full object-cover object-center lg:h-full lg:w-full")
+            div(class="mt-4 flex justify-between")
+              div
+                h3(class="text-sm text-gray-700")
+                  a(href=`/products/${product.id}`)
+                    span(aria-hidden="true" class="absolute inset-0")
+                    | #{product.name}
+                p(class="mt-1 text-sm text-gray-500")= product.category
+              p(class="text-sm font-medium text-gray-900")= `$${product.price}`
+
+      // Pagination
+      if total > limit
+        div(class="mt-10 flex items-center justify-center border-t border-gray-200 pt-6")
+          nav(class="flex" aria-label="Pagination")
+            a(href=`?page=${page > 1 ? page - 1 : 1}&limit=${limit}` class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0")
+              span(class="sr-only") Previous
+              svg(class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true")
+                path(fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd")
+            - for (let i = 1; i <= Math.ceil(total / limit); i++)
+              a(href=`?page=${i}&limit=${limit}` class=`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${i === page ? 'bg-indigo-600 text-white' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'} focus:z-20 focus:outline-offset-0`)= i
+            a(href=`?page=${page < Math.ceil(total / limit) ? page + 1 : Math.ceil(total / limit)}&limit=${limit}` class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0")
+              span(class="sr-only") Next
+              svg(class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true")
+                path(fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l4.5 4.25a.75.75 0 11-1.04 1.08L11.168 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd")
